@@ -1,0 +1,36 @@
+class Snake:
+    def __init__(self):
+        self.size = 1
+        self.segment_size = 20
+        self.snake_list = [] 
+
+    def draw(self):
+        for segment in self.snake_list:
+            pygame.draw.rect(window, GREEN, [segment[0], segment[1], self.segment_size, self.segment_size])
+
+    def move(self):
+        x, y = self.snake_list[0]
+        if self.direction == "UP":
+            y -= 10
+        elif self.direction == "DOWN":
+            y += 10
+        elif self.direction == "LEFT":
+            x -= 10
+        elif self.direction == "RIGHT":
+            x += 10
+        self.segments.insert(0, (x, y))
+        if len(self.segments) > self.size:
+            self.segments.pop()
+
+    def change_direction(self, new_direction):
+        if new_direction == "UP" and self.direction != "DOWN":
+            self.direction = new_direction
+        elif new_direction == "DOWN" and self.direction != "UP":
+            self.direction = new_direction
+        elif new_direction == "LEFT" and self.direction != "RIGHT":
+            self.direction = new_direction
+        elif new_direction == "RIGHT" and self.direction != "LEFT":
+            self.direction = new_direction
+    
+    def check_collision(self):
+        head = self.snake_list[0]
