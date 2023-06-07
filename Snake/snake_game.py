@@ -26,13 +26,13 @@ class Snake:
     def move(self):
         x, y = self.snake_segments[0]
         if self.direction == "UP":
-            y -= 10
+            y -= SNAKE_SEGMENT_SIZE
         elif self.direction == "DOWN":
-            y += 10
+            y += SNAKE_SEGMENT_SIZE
         elif self.direction == "LEFT":
-            x -= 10
+            x -= SNAKE_SEGMENT_SIZE
         elif self.direction == "RIGHT":
-            x += 10
+            x += SNAKE_SEGMENT_SIZE
 
         self.snake_segments.insert(0, (x, y))
 
@@ -49,13 +49,18 @@ class Snake:
         elif new_direction == "RIGHT" and self.direction != "LEFT":
             self.direction = new_direction
 
+    def snake_eating_check(self,food_position):
+        if self.snake_segments[0] == food_position:
+            return True
+        return False
+
     def draw(self):
         for segment in self.snake_segments:
             pygame.draw.rect(window,GREEN, (segment[0], segment[1], SNAKE_SEGMENT_SIZE, SNAKE_SEGMENT_SIZE))
 
 class Food:
     def __init__(self) -> None:
-        self.position = ((random.randint(0,(width-SNAKE_SEGMENT_SIZE)/10))*10,(random.randint(0,(height-SNAKE_SEGMENT_SIZE)/10))*10)
+        self.position = ((random.randint(0,(width-SNAKE_SEGMENT_SIZE)/SNAKE_SEGMENT_SIZE))*SNAKE_SEGMENT_SIZE,(random.randint(0,(height-SNAKE_SEGMENT_SIZE)/SNAKE_SEGMENT_SIZE))*SNAKE_SEGMENT_SIZE)
 
     def draw(self):
         pygame.draw.rect(window, RED, (self.position[0], self.position[1],SNAKE_SEGMENT_SIZE,SNAKE_SEGMENT_SIZE))
@@ -65,15 +70,32 @@ def draw_game():
 
 snake = Snake()
 food = Food()
+running = True
 while True:
     window.fill(BLACK)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            running = False
             pygame.quit()
             exit()
-    snake.draw()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                snake.change_direction("UP")
+            elif event.key == pygame.K_DOWN:
+                snake.change_direction("DOWN")
+            elif event.key == pygame.K_LEFT:
+                snake.change_direction("LEFT")
+            elif event.key == pygame.K_RIGHT:
+                snake.change_direction("RIGHT")
     food.draw()
+    snake.draw()
+    snake.move()
+    
+    if snake.snake_eating_check(food.position):
+        snake.size +=1
+        food = Food()
+
     pygame.display.update()
     clock.tick(SNAKE_SPEED)
 
